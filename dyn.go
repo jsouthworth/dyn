@@ -2,7 +2,7 @@
 // reflection to implement these functions and provides interfaces that a
 // user may use to override the default go behaviors. This allows for one
 // to build late bound language extensions for go.
-package dyn
+package dyn // import "jsouthworth.net/go/dyn"
 
 import (
 	"errors"
