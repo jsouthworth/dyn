@@ -19,7 +19,9 @@ type Applier interface {
 // Apply will apply the type with the supplied arguments. If the type
 // is an Applier then Apply will be called. Otherwise if the type is a go
 // function type then it will be called with reflect in the standard
-// way. Any other type will panic.
+// way. If Apply is called with a map or a slice, the arguments are treated as
+// a selector and the selector is looked up in the collection. This makes maps
+// behave like declarative functions. Any other type will panic.
 func Apply(f interface{}, args ...interface{}) interface{} {
 	if a, ok := f.(Applier); ok {
 		return a.Apply(args...)
@@ -29,6 +31,11 @@ func Apply(f interface{}, args ...interface{}) interface{} {
 
 func apply(fnv reflect.Value, args ...interface{}) interface{} {
 	fnt := fnv.Type()
+	switch fnt.Kind() {
+	case reflect.Map, reflect.Slice, reflect.Struct:
+		out, _ := findReflect(fnv, args[0])
+		return out
+	}
 	argvs := make([]reflect.Value, len(args))
 	for i, arg := range args {
 		if arg == nil {

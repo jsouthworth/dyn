@@ -10,6 +10,26 @@ func ExampleApply() {
 	// Output: 100
 }
 
+func ExampleApply_map() {
+	fmt.Println(Apply(map[string]int{"a": 10, "b": 20, "c": 30}, "a"))
+	// Output: 10
+}
+
+func ExampleApply_slice() {
+	fmt.Println(Apply([]string{"foo", "bar", "baz"}, 1))
+	// Output: bar
+}
+
+func ExampleApply_struct() {
+	type example struct {
+		Foo, Bar, Baz string
+	}
+	fmt.Println(Apply(example{"foo", "bar", "baz"}, "Foo"))
+	fmt.Println(Apply(example{"foo", "bar", "baz"}, 1))
+	// Output: foo
+	// bar
+}
+
 type annotate struct {
 	name string
 	fn   interface{}
