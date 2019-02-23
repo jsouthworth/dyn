@@ -192,3 +192,184 @@ func Send(rcvr interface{}, message ...interface{}) interface{} {
 	}
 	return apply(method, message[1:]...)
 }
+
+// Equaler is a type that knows how to compare its self to another value
+// using the Equal function. If the other value should be considered the
+// same as the value then true must be returned, false otherwise.
+type Equaler interface {
+	Equal(other interface{}) bool
+}
+
+// Equal compares two arbitrary values. If one of the values is an
+// Equaler then Equal is called on that type with the other as the
+// argument. Otherwise go's standard equality operator is used.
+func Equal(one, two interface{}) bool {
+	switch v := one.(type) {
+	case Equaler:
+		return v.Equal(two)
+	}
+
+	switch v := two.(type) {
+	case Equaler:
+		return v.Equal(one)
+	}
+
+	return one == two
+}
+
+// Comparer is any type that knows how to compare its self to
+// another value. Compare must return negative value when the other
+// argument is larger than it is, positive when the other argument is
+// greater, and zero if they are equivalent.
+type Comparer interface {
+	Compare(other interface{}) int
+}
+
+// Compare compares all native comparable go types and any type
+// that is a Comparer. It returns a negative value if one < two, a
+// positive value if one > two or zero if they are equivalent.
+func Compare(one, two interface{}) int {
+	if one == two {
+		return 0
+	}
+	if one == nil {
+		return -1
+	}
+	if two == nil {
+		return 1
+	}
+	switch v1 := one.(type) {
+	case uint:
+		v2 := two.(uint)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case uint8:
+		v2 := two.(uint8)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case uint16:
+		v2 := two.(uint16)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case uint32:
+		v2 := two.(uint32)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case uint64:
+		v2 := two.(uint64)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case int:
+		v2 := two.(int)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case int8:
+		v2 := two.(int8)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case int16:
+		v2 := two.(int16)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case int32:
+		v2 := two.(int32)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case int64:
+		v2 := two.(int64)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case float32:
+		v2 := two.(float32)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case float64:
+		v2 := two.(float64)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	case string:
+		v2 := two.(string)
+		switch {
+		case v1 < v2:
+			return -1
+		case v1 > v2:
+			return 1
+		default:
+			return 0
+		}
+	default:
+		return one.(Comparer).Compare(two)
+	}
+}

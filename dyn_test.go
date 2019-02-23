@@ -221,3 +221,64 @@ func ExampleAt_slice() {
 	fmt.Println(At([]string{"hello"}, 0))
 	// Output: hello
 }
+
+func ExampleEqual_goNative() {
+	fmt.Println(Equal(1, 2))
+	// Output: false
+}
+
+type equalExample struct {
+	m map[string]int
+}
+
+func (e *equalExample) Equal(other interface{}) bool {
+	oex, isEqualExample := other.(*equalExample)
+	if !isEqualExample {
+		return false
+	}
+	for k, v := range e.m {
+		if oex.m[k] != v {
+			return false
+		}
+	}
+	return true
+}
+
+func ExampleEqual_equaler() {
+	a := &equalExample{m: map[string]int{"a": 10, "b": 20, "c": 30}}
+	b := &equalExample{m: map[string]int{"a": 10, "b": 20, "c": 30}}
+	fmt.Println(Equal(a, b))
+	//Output: true
+}
+
+func ExampleEqual_oneEqualer() {
+	a := &equalExample{m: map[string]int{"a": 10, "b": 20, "c": 30}}
+	b := map[string]int{"a": 10, "b": 20, "c": 30}
+	fmt.Println(Equal(b, a))
+	//Output: false
+}
+
+func ExampleCompare_goNative() {
+	fmt.Println(Compare("a", "b"))
+	//Output: -1
+}
+
+type invertedCompare int
+
+func (e invertedCompare) Compare(other interface{}) int {
+	// Note: this version of compare inverts the standard relationship
+	oe := other.(invertedCompare)
+	switch {
+	case e > oe:
+		return -1
+	case e < oe:
+		return 1
+	default:
+		return 0
+	}
+
+}
+func ExampleCompare_comparer() {
+	fmt.Println(Compare(invertedCompare(1), invertedCompare(2)))
+	//Output: 1
+}
