@@ -70,6 +70,19 @@ func apply(fnv reflect.Value, args ...interface{}) interface{} {
 	}
 }
 
+// Compose implements generic function composition Compose(f, g)(x) is
+// equivalent to f(g(x))
+func Compose(fns ...interface{}) interface{} {
+	if len(fns) == 0 {
+		return func(x interface{}) interface{} {
+			return x
+		}
+	}
+	return func(x interface{}) interface{} {
+		return Apply(fns[0], Apply(Compose(fns[1:]...), x))
+	}
+}
+
 // Bind will create a context in which the function application is
 // deferrred. When the returned context is called the function is applied
 // and the result returned.

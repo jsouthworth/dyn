@@ -282,3 +282,14 @@ func ExampleCompare_comparer() {
 	fmt.Println(Compare(invertedCompare(1), invertedCompare(2)))
 	//Output: 1
 }
+
+func ExampleCompose() {
+	square := func(x int) int {
+		return x * x
+	}
+	negate := func(x int) int {
+		return -x
+	}
+	fmt.Println(Apply(Compose(negate, square), 5))
+	//Output: -25
+}
