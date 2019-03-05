@@ -92,6 +92,17 @@ func Bind(fn interface{}, args ...interface{}) func() interface{} {
 	}
 }
 
+// PrependArg imprements a common pattern when calling aribitrary functions.
+// Sometimes one needs all the passed in args and one more at the beginning
+// to accomodate this, this function encapsulates the clumsy pattern of
+// append([]interface{arg}, args...).
+func PrependArg(arg interface{}, args ...interface{}) []interface{} {
+	out := make([]interface{}, len(args)+1)
+	copy(out[1:], args)
+	out[0] = arg
+	return out
+}
+
 // Finder is any type that can index its self and return a value it
 // contains and whether a value was at that index.
 type Finder interface {

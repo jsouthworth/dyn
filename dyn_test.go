@@ -3,6 +3,7 @@ package dyn
 import (
 	"errors"
 	"fmt"
+	"testing"
 )
 
 func ExampleApply() {
@@ -162,7 +163,7 @@ func (o *object) Receive(message ...interface{}) interface{} {
 	if !understood {
 		panic(DoesNotUnderstand(o, message...))
 	}
-	return Apply(method, append([]interface{}{o}, args...)...)
+	return Apply(method, PrependArg(o, args...)...)
 }
 
 func (o *object) Find(name interface{}) (interface{}, bool) {
@@ -292,4 +293,26 @@ func ExampleCompose() {
 	}
 	fmt.Println(Apply(Compose(negate, square), 5))
 	//Output: -25
+}
+
+var argList = []interface{}{1, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40}
+
+func BenchmarkPrependArg(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = PrependArg("r", argList...)
+	}
+
+}
+
+func BenchmarkPrependWithAppend(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = append([]interface{}{"r"}, argList...)
+	}
+}
+
+func ExamplePrependArg() {
+	args := []interface{}{"b", "c", "d", "e"}
+	args = PrependArg("a", args...)
+	fmt.Println(args)
+	// Output: [a b c d e]
 }
