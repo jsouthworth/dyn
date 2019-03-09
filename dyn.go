@@ -66,9 +66,15 @@ func apply(fnv reflect.Value, args ...interface{}) interface{} {
 		for i, outv := range outvs {
 			outs[i] = outv.Interface()
 		}
-		return outs
+		return Tuple(outs)
 	}
 }
+
+// Tuple is the return type for multiple return functions. This is
+// used to differentiate between a function returning []interface{} and
+// one where the library creates a []interface{} for the returned
+// arguments.
+type Tuple []interface{}
 
 // Compose implements generic function composition Compose(f, g)(x) is
 // equivalent to f(g(x))
@@ -79,7 +85,13 @@ func Compose(fns ...interface{}) interface{} {
 		}
 	}
 	return func(x interface{}) interface{} {
-		return Apply(fns[0], Apply(Compose(fns[1:]...), x))
+		newArg := Apply(Compose(fns[1:]...), x)
+		switch arg := newArg.(type) {
+		case Tuple:
+			return Apply(fns[0], arg...)
+		default:
+			return Apply(fns[0], arg)
+		}
 	}
 }
 
