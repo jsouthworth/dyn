@@ -326,3 +326,61 @@ func ExamplePrependArg() {
 	fmt.Println(args)
 	// Output: [a b c d e]
 }
+
+type testEqual struct{}
+
+func (*testEqual) Equal(other interface{}) bool { return true }
+
+func TestEqual(t *testing.T) {
+	t.Run("like types", func(t *testing.T) {
+		Equal(1, 2)
+	})
+	t.Run("unlike types", func(t *testing.T) {
+		Equal(1, "")
+		Equal("", 1)
+	})
+	t.Run("non-comparable types", func(t *testing.T) {
+		defer func() {
+			r := recover()
+			if r == nil {
+				t.Fatal("should have failed")
+			}
+		}()
+		Equal(func() {}, func() {})
+	})
+	t.Run("non-comparable nil", func(t *testing.T) {
+		Equal(func() {}, nil)
+		Equal(nil, func() {})
+	})
+	t.Run("one Equaler", func(t *testing.T) {
+		Equal(&testEqual{}, nil)
+	})
+	t.Run("two Equaler", func(t *testing.T) {
+		Equal(nil, &testEqual{})
+	})
+}
+
+func TestEqualNonComparable(t *testing.T) {
+	t.Run("like types", func(t *testing.T) {
+		EqualNonComparable(1, 2)
+	})
+	t.Run("unlike types", func(t *testing.T) {
+		EqualNonComparable(1, "")
+		EqualNonComparable("", 1)
+	})
+	t.Run("non-comparable types", func(t *testing.T) {
+		EqualNonComparable(func() {}, func() {})
+		EqualNonComparable("", func() {})
+		EqualNonComparable(func() {}, "")
+	})
+	t.Run("non-comparable nil", func(t *testing.T) {
+		EqualNonComparable(func() {}, nil)
+		EqualNonComparable(nil, func() {})
+	})
+	t.Run("one Equaler", func(t *testing.T) {
+		EqualNonComparable(&testEqual{}, nil)
+	})
+	t.Run("two Equaler", func(t *testing.T) {
+		EqualNonComparable(nil, &testEqual{})
+	})
+}

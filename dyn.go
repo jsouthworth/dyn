@@ -253,6 +253,25 @@ func Equal(one, two interface{}) bool {
 	return one == two
 }
 
+// EqualNonComparable is a version of Equal that is safe for
+// non-comparable types. If the type of the value passed in is
+// non-comparable then the function always returns false.
+func EqualNonComparable(one, two interface{}) bool {
+	switch one.(type) {
+	case Equaler:
+	default:
+		// if Values are incomparable don't panic just
+		// return false. Keys must be comparable though
+		if one != nil && !reflect.TypeOf(one).Comparable() {
+			return false
+		}
+		if two != nil && !reflect.TypeOf(two).Comparable() {
+			return false
+		}
+	}
+	return Equal(one, two)
+}
+
 // Comparer is any type that knows how to compare its self to
 // another value. Compare must return negative value when the other
 // argument is larger than it is, positive when the other argument is
