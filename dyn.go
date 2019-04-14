@@ -23,8 +23,11 @@ type Applier interface {
 // a selector and the selector is looked up in the collection. This makes maps
 // behave like declarative functions. Any other type will panic.
 func Apply(f interface{}, args ...interface{}) interface{} {
-	if a, ok := f.(Applier); ok {
+	switch a := f.(type) {
+	case Applier:
 		return a.Apply(args...)
+	case func(...interface{}) interface{}:
+		return a(args...)
 	}
 	return apply(reflect.ValueOf(f), args...)
 }

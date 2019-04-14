@@ -31,6 +31,15 @@ func ExampleApply_struct() {
 	// bar
 }
 
+func ExampleApply_variadic() {
+	fn := func(args ...interface{}) interface{} {
+		fmt.Println(args...)
+		return nil
+	}
+	Apply(fn, "foo", "bar", "baz")
+	// Output: foo bar baz
+}
+
 type annotate struct {
 	name string
 	fn   interface{}
